@@ -6,7 +6,7 @@ import config
 logger = logging.getLogger(__name__)
 
 def init_db() -> None:
-    # Create the directory if it doesn't exist (e.g., /tmp or /var/data)
+    # Create the directory if it doesn't exist (fixes the OperationalError)
     db_dir = os.path.dirname(config.DB_PATH)
     if db_dir and not os.path.exists(db_dir):
         try:
