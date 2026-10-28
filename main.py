@@ -4,7 +4,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
 
 # --- PUT YOUR REAL TOKEN HERE ---
-BOT_TOKEN = "9149929553:AAEFz1ibbWedWHEtQKQ4-3jloSVgS5YysZU"
+BOT_TOKEN = 9149929553:AAFZnxsrGv-rDrzvSqvX9ts1s7hAoAdjOR0
 # --------------------------------
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
