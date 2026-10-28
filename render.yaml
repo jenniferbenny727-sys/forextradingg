@@ -1,0 +1,22 @@
+services:
+  - type: worker
+    name: forex-trading-bot
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py
+    disk:
+      name: forex-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: FOREX_API_KEY
+        sync: false
+      - key: FOREX_API_PROVIDER
+        value: twelvedata
+      - key: LOG_LEVEL
+        value: INFO
+      - key: DB_PATH
+        value: /var/data/forex_bot.db
