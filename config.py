@@ -2,15 +2,13 @@ import os
 import logging
 from dotenv import load_dotenv
 
-# This tells Python to read the Secret File we just created
-load_dotenv("/etc/secrets/.env") 
-load_dotenv() # Also looks in the root folder just in case
+# Load the Secret File you created in Render
+load_dotenv("/etc/secrets/.env")
+load_dotenv() # Fallback for local testing
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=os.getenv("LOG_LEVEL", "INFO").upper(),
-)
-# ... keep the rest of your config.py the same ...
 )
 logger = logging.getLogger(__name__)
 
@@ -20,7 +18,7 @@ FOREX_API_PROVIDER = os.getenv("FOREX_API_PROVIDER", "twelvedata")
 
 if not TELEGRAM_BOT_TOKEN:
     raise RuntimeError(
-        "TELEGRAM_BOT_TOKEN is missing. Set it in Render Environment variables."
+        "TELEGRAM_BOT_TOKEN is missing. Check your Render Secret Files or Environment Variables."
     )
 
 if not FOREX_API_KEY:
@@ -29,8 +27,9 @@ if not FOREX_API_KEY:
         "Basic commands will still work."
     )
 
+# Using /tmp so SQLite works immediately without needing a paid disk
 DB_PATH = os.getenv("DB_PATH", "/tmp/forex_bot.db")
-# Twelve Data free tier: 8 credits/min, 800/day [citation:3][citation:13]
+
 API_BASE_URL = "https://api.twelvedata.com"
 API_TIMEOUT_SECONDS = 10
 API_MAX_RETRIES = 2
