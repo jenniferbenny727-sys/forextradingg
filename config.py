@@ -22,8 +22,7 @@ if not FOREX_API_KEY:
         "Basic commands will still work."
     )
 
-DB_PATH = os.getenv("DB_PATH", "/var/data/forex_bot.db")
-
+DB_PATH = os.getenv("DB_PATH", "/tmp/forex_bot.db")
 # Twelve Data free tier: 8 credits/min, 800/day [citation:3][citation:13]
 API_BASE_URL = "https://api.twelvedata.com"
 API_TIMEOUT_SECONDS = 10
