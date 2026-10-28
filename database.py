@@ -1,10 +1,19 @@
 import sqlite3
 import logging
+import os
 import config
 
 logger = logging.getLogger(__name__)
 
 def init_db() -> None:
+    # Create the directory if it doesn't exist (e.g., /tmp or /var/data)
+    db_dir = os.path.dirname(config.DB_PATH)
+    if db_dir and not os.path.exists(db_dir):
+        try:
+            os.makedirs(db_dir, exist_ok=True)
+        except Exception as e:
+            logger.error(f"Failed to create directory {db_dir}: {e}")
+
     conn = sqlite3.connect(config.DB_PATH, check_same_thread=False)
     try:
         conn.execute("""
