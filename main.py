@@ -1,18 +1,5 @@
-import asyncio
-# ... your other imports ...
-
-def main() -> None:
-    # Create a new event loop for Python 3.14
-    try:
-        asyncio.get_event_loop()
-    except RuntimeError:
-        new_loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(new_loop)
-
-    database.init_db()
-    app = ApplicationBuilder().token(config.TELEGRAM_BOT_TOKEN).post_init(post_init).build()
-    # ... keep the rest of your handlers and run_polling() exactly the same ...
 import logging
+import asyncio
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, CallbackQueryHandler,
@@ -26,7 +13,7 @@ import database
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=config.logger.level if hasattr(config, "logger") else logging.INFO,
+    level=logging.INFO,
 )
 logger = logging.getLogger(__name__)
 
@@ -83,7 +70,7 @@ async def signals_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                 )
             else:
                 lines.append(f"{pair}: NO TRADE — {r['reason']}")
-        except market_data.MarketDataError as e:
+        except Exception as e:
             lines.append(f"{pair}: ❌ {e}")
     await msg.edit_text("\n".join(lines), parse_mode="Markdown")
 
@@ -109,8 +96,8 @@ async def analyze_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                 f"Data: {prefs['timeframe']} candles | UTC. Algorithmic output, not advice."
             )
         await update.message.reply_text(text, parse_mode="Markdown")
-    except market_data.MarketDataError as e:
-        await update.message.reply_text(f"❌ {e}")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Error: {e}")
 
 async def price_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     prefs = database.get_prefs(update.effective_user.id)
@@ -125,8 +112,8 @@ async def price_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             f"Source: Twelve Data | Free tier may be delayed.",
             parse_mode="Markdown",
         )
-    except market_data.MarketDataError as e:
-        await update.message.reply_text(f"❌ {e}")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Error: {e}")
 
 async def pairs_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(
@@ -228,8 +215,16 @@ async def post_init(application) -> None:
     ])
 
 def main() -> None:
+    # THE FIX FOR PYTHON 3.14
+    try:
+        asyncio.get_event_loop()
+    except RuntimeError:
+        new_loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(new_loop)
+
     database.init_db()
     app = ApplicationBuilder().token(config.TELEGRAM_BOT_TOKEN).post_init(post_init).build()
+    
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_cmd))
     app.add_handler(CommandHandler("signals", signals_cmd))
@@ -242,7 +237,7 @@ def main() -> None:
     app.add_handler(CommandHandler("status", status_cmd))
     app.add_handler(CommandHandler("stop", stop_cmd))
     app.add_handler(CallbackQueryHandler(button_cb))
-    app.add_handler(CommandHandler("__unknown__", unknown))
+    
     logger.info("Bot starting with long polling…")
     app.run_polling(allowed_updates=Update.ALL_TYPES)
 
