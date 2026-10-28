@@ -1,3 +1,17 @@
+import asyncio
+# ... your other imports ...
+
+def main() -> None:
+    # Create a new event loop for Python 3.14
+    try:
+        asyncio.get_event_loop()
+    except RuntimeError:
+        new_loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(new_loop)
+
+    database.init_db()
+    app = ApplicationBuilder().token(config.TELEGRAM_BOT_TOKEN).post_init(post_init).build()
+    # ... keep the rest of your handlers and run_polling() exactly the same ...
 import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
