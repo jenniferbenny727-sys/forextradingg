@@ -1,9 +1,16 @@
 import os
 import logging
+from dotenv import load_dotenv
+
+# This tells Python to read the Secret File we just created
+load_dotenv("/etc/secrets/.env") 
+load_dotenv() # Also looks in the root folder just in case
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=os.getenv("LOG_LEVEL", "INFO").upper(),
+)
+# ... keep the rest of your config.py the same ...
 )
 logger = logging.getLogger(__name__)
 
